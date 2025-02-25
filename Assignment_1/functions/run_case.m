@@ -15,6 +15,8 @@ function struct = run_case(s, SP, Stochastic, ctrl)
         case 3
             T = N/2; % Periode in sampels
             omega = square(2*pi*1/T*(1:N),50)';
+        case 4
+            omega = s.ref;
         otherwise
             msg = "Choose a valid value for: Setpoint";
             error(msg)
