@@ -1,6 +1,6 @@
 function [G, S] = diophantine(A,B,m)
     G = [];
-    S = [B; zeros(length(A)-length(B),1)]'; % Pad B with zeros to make S as long as A
+    S = [B, zeros(1,length(A)-length(B))]; % Pad B with zeros to make S as long as A
     
     for i = 1:m
         % Augment with first element of S

@@ -42,9 +42,9 @@ function struct = run_case(s, SP, Stochastic, ctrl)
         case 3
             [y,u] = MV0(A, B, omega, e, N, k);
         case 4
-            [y,u] = ARX(A, B, e, N,y_init, u_init, s.u_data(:,2));
+            [y,u] = ARX(A, B, e, N, k, y_init, u_init, s.u_data);
         case 5
-            [y,u] = ARX(A, B, e, N,y_init, u_init, zeros(N,1));
+            [y,u] = ARX(A, B, e, N, k, y_init, u_init, zeros(N,1));
         otherwise
             msg = "Choose a valid value for: Control type";
             error(msg)

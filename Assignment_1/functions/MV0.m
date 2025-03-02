@@ -5,7 +5,7 @@ function [y,u] = MV0(A, B, omega, e, N, k)
 
         u = zeros(N,1);
         y = zeros(N,1);
-    for t = max([length(A), length(B),length(R)])+1:N
+    for t = max([length(A), length(B),length(R)])+k:N
         % Collect past values safely
         y_past = y(t-1:-1:t-length(A)+1);
         u_past = u(t-k:-1:t-k-length(B)+1);
