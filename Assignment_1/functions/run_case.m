@@ -40,7 +40,7 @@ function struct = run_case(s, SP, Stochastic, ctrl)
         case 2
             [y,u] = MV(A, B, e, N, k);
         case 3
-            [y,u] = MV0(A, B, omega, e, N, k);
+            [y,u] = MV0(A, B, omega, e, N, k, y_init, u_init);
         case 4
             [y,u] = ARX(A, B, e, N, k, y_init, u_init, s.u_data);
         case 5
