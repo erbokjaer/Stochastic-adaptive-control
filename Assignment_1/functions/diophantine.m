@@ -1,8 +1,7 @@
 function [G, S] = diophantine(A,B,m)
     G = [];
     S = [B, zeros(1,length(A)-length(B))]; % Pad B with zeros to make S as long as A
-    
-    for i = 1:m
+    for i = 1:m 
         % Augment with first element of S
         G = [G, S(1)];
     
