@@ -1,6 +1,6 @@
 function [y, u] = ARX(A, B, e, N, k, y_init, u_init, u_in)
-    u = [u_init; u_in(1:N-length(u_init))];
-    y = [y_init; zeros(N-length(y_init),1)];
+    u = [u_init; u_in(1:N-numel(u_init))];
+    y = [y_init; zeros(N-numel(y_init),1)];
 
     for t = max([length(A), length(B)])+k:N
         % Collect past values safely

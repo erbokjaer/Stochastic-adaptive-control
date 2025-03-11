@@ -25,7 +25,7 @@ function struct = run_case(s, SP, Stochastic, ctrl)
     
     switch Stochastic
         case 1
-            e = s.sigma_e * randn(N, 1);  % Process noise (Gaussian)
+            e = normrnd(s.mu, s.sigma_e,s.N,1);  % Process noise (Gaussian)
         case 2
             e = zeros(N,1);
         otherwise
