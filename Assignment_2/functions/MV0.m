@@ -1,5 +1,5 @@
-function [y,u] = MV0(A, B, omega, e, N, k, y_init, u_init)
-        [G,S] = diophantine(A,1,k);
+function [y,u] = MV0(A, B, C, omega, e, N, k, y_init, u_init)
+        [G,S] = diophantine(A,C,k);
         
         R = conv(B,G);
         e = [zeros(max([numel(A),numel(B)]),1);e];
