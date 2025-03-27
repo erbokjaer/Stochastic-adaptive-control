@@ -1,4 +1,4 @@
-function [y, u] = MV1a_Controller(A, B, C, Ay, By, k, rho, omega, e, N)
+function [y, u] = MV1a(A, B, C, k, omega, e, N,  Ay, By, Au, Bu, Aw, Bw, rho, y_init, u_init)
     % MV1a_Controller: Implements MV1a control law iteratively.
     %
     % Inputs:
@@ -20,42 +20,61 @@ function [y, u] = MV1a_Controller(A, B, C, Ay, By, k, rho, omega, e, N)
     % Solve the Diophantine equation for G and S
     [G, S] = diophantine(conv(Ay, A), conv(By, C), k);
 
+    [G, S] = diophantine(A, 1, k);
+    R1 = conv(Au,conv(B,G));
+    R2 = rho*conv(C,Bu);
+
+    % diff = numel(R1) - numel(R2);
+    % if diff > 0
+    %     R2 = [R2, zeros(1,abs(diff))];
+    % elseif diff < 0 
+    %     R1 = [R1, zeros(1,abs(diff))];
+    % end
+
+    R = R1;
+
+
+
     % Ensure input signals have length N
-    omega = [omega, zeros(1, N - length(omega))]; 
-    e = [e, zeros(1, N - length(e))];
+    omega = [y_init; omega]; 
+    e = [zeros(numel(y_init),1) ; e];
 
     % Get polynomial orders
-    na = length(A) - 1;
-    nb = length(B) - 1;
-    nc = length(C) - 1;
-    ng = length(G) - 1;
-    ns = length(S) - 1;
+    na = numel(A) - 1;
+    nb = numel(B) - 1;
+    nc = numel(C) - 1;
+    nr = numel(R) - 1;
+    ng = numel(G) - 1;
+    ns = numel(S) - 1;
 
     % Initialize output and control input vectors
-    y = zeros(1, N);
-    u = zeros(1, N);
+    y = [y_init; zeros(N,1)];
+    u = [u_init; zeros(N,1)];
 
     % Extract first coefficient of B(q^-1) for regularization
     b0 = B(1);
     alpha = rho / b0;
 
     % Iterative MV1a control computation
-    for t = max([na, nb, nc, ng, ns, k]) + 1 : N  
+    for t = max([na, nb, nc, nr, ns, ng, ns, k]) + 1 : N + max(numel(y_init),numel(u_init))
+        Y_t = y(t - (1:na));
+        U_t = u(t - k - (0:nb));
+        E_t = e(t - (0:nc));
+
         % Compute y using past values (and include u in the equation)
-        y_t = -sum(A(2:end) .* flip(y(t-na:t-1))) ...
-              + sum(B(1:nb+1) .* flip(u(t-nb:t-1+k))) ...  % Adjusted here
-              + sum(C .* flip(e(t-nc:t-1))) ...
-            ;
-        % Compute control input u using MV1a law
-        u_t_1 = u(t-1); % H_u(q) = 1 - q^-1
 
-        u(t) = (1 / (b0 + alpha)) * (... 
-               -alpha * u_t_1 ...
-               + sum(S .* flip(y(t-ns:t-1))) ...
-               - sum(G .* flip(omega(t-ng:t-1))) ...
-              );
+        y(t) = - A(2:end) * Y_t + B * U_t + C * E_t;
 
+        Y_s = y(t - (0:ns));
+        U_r = u(t - (1:nr));
+        W_t = omega(t);
+
+        % Compute control input u using MV1a law % H_u(q) = 1 - q^-1
+        u(t) = 1/(R(1)) * (W_t-S*Y_s - R(2:end)*U_r);
         % Store output
-        y(t-1) = y_t;
     end
+
+    y = y(numel(y_init)+1:end);
+    u = u(numel(u_init)+1:end);
+    
 end
