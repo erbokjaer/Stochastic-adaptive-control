@@ -1,4 +1,4 @@
-function plotSystemResponse(s11, plotPos, filename)
+function plotSystemResponse(s11, t, plotPos, filename)
     % Create figure and set position
     fig = figure();
     fig.Position = plotPos;
@@ -8,7 +8,7 @@ function plotSystemResponse(s11, plotPos, filename)
     
     % Plot system output
     nexttile;
-    plot(s11.y, 'b', 'LineWidth', 1.5);
+    plot(t, s11.y, 'b', 'LineWidth', 1.5);
     title('System Output y_t');
     xlabel('Time Step');
     ylabel('y_t');
@@ -18,7 +18,7 @@ function plotSystemResponse(s11, plotPos, filename)
     
     % Plot control input
     nexttile;
-    plot(s11.u, 'r', 'LineWidth', 1.5);
+    plot(t, s11.u, 'r', 'LineWidth', 1.5);
     title('Control Input u_t');
     xlabel('Time Step');
     ylabel('u_t');
@@ -28,7 +28,7 @@ function plotSystemResponse(s11, plotPos, filename)
     
     % Plot reference omega
     nexttile;
-    plot(s11.omega, 'b', 'LineWidth', 1.5);
+    plot(t, s11.omega, 'b', 'LineWidth', 1.5);
     title('Ref \omega');
     xlabel('Time Step');
     ylabel('\omega');
@@ -38,7 +38,7 @@ function plotSystemResponse(s11, plotPos, filename)
     
     % Plot error
     nexttile;
-    plot(s11.omega - s11.y, 'r', 'LineWidth', 1.5);
+    plot(t, s11.omega - s11.y, 'r', 'LineWidth', 1.5);
     title('Error');
     xlabel('Time Step');
     ylabel('error');
