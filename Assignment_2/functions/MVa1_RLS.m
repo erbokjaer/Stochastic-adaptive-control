@@ -91,6 +91,10 @@ function [y, u, theta_rls] = MVa1_RLS(A, B, C, k, omega, e, N,theta_init, P_init
             
             P = P - K_t * Phi_t' * P; % Standard RLS update
         end
+
+        % if mod(t,50)
+        %     P = P_init;
+        % end 
         
         % Store estimates over time
         theta_rls(:, t) = theta_hat;
@@ -131,6 +135,7 @@ function [y, u, theta_rls] = MVa1_RLS(A, B, C, k, omega, e, N,theta_init, P_init
 
         % Store output
     end
+
     y = y(numel(y_init)+1:end);
     u = u(numel(u_init)+1:end);
 end
