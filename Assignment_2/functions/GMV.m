@@ -9,9 +9,8 @@ function [y, u] = GMV(A, B, C, k, omega, e, N,  Ay, By, Au, Bu, Aw, Bw, rho, y_i
     alpha = rho / b0;
     R1 = conv(Au,conv(B,G));
     R2 = alpha*conv(C,Bu);
-
     
-
+    
     diff = numel(R1) - numel(R2);
     if diff > 0
         R2 = [R2, zeros(1,abs(diff))];
@@ -26,8 +25,6 @@ function [y, u] = GMV(A, B, C, k, omega, e, N,  Ay, By, Au, Bu, Aw, Bw, rho, y_i
 
     W_in = conv(conv(conv(Au,Ay),Bw),C);
     Y_in = conv(Au,conv(Aw,S));
-        
-    
 
 
     % Ensure input signals have length N
@@ -56,7 +53,6 @@ function [y, u] = GMV(A, B, C, k, omega, e, N,  Ay, By, Au, Bu, Aw, Bw, rho, y_i
         E_t = e(t - (0:nc));
 
         % Compute y using past values (and include u in the equation)
-
         y(t) = - A(2:end) * Y_t + B * U_t + C * E_t;
 
         Y_s = y(t - (0:ny_in));
@@ -65,7 +61,7 @@ function [y, u] = GMV(A, B, C, k, omega, e, N,  Ay, By, Au, Bu, Aw, Bw, rho, y_i
         % W_t = omega(t);
         
         % Compute control input u using MV1a law % H_u(q) = 1 - q^-1
-        u(t) = 1/(R(1)) * (W_in * W_t - Y_in*Y_s - R(2:end)*U_r);
+        u(t) = 1/(R(1)) * (W_in * W_t - Y_in * Y_s - R(2:end) * U_r);
 
         % Store output
     end

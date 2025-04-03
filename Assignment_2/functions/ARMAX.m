@@ -1,4 +1,4 @@
-function [y, u] = ARMAX(A, B, C, k, e, N, y_init, u_init)
+function [y, u] = ARMAX(A, B, C, k, e, N, y_init, u_init, u_in )
 
     e = [zeros(numel(y_init),1) ; e];
 
@@ -10,7 +10,7 @@ function [y, u] = ARMAX(A, B, C, k, e, N, y_init, u_init)
 
     % Initialize output and control input vectors
     y = [y_init; zeros(N,1)];
-    u = [u_init; zeros(N,1)];
+    u = [u_init; u_in];
     e = [zeros(numel(y_init),1) ; e];
 
     % Iterative MV1a control computation
