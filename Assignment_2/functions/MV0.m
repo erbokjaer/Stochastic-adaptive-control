@@ -15,6 +15,7 @@ function [y,u] = MV0(A, B, omega, e, N, k, y_init, u_init)
         % Compute system output
         y(t) = -A(2:end) * y_past + B * u_past + e(t);
 
+
         % MVC0
         u(t) = 1/(R(1)) * (omega(t)-S*y(t:-1:t-length(S)+1) - R(2:end)*u(t-1:-1:t-length(R)+1));
     end

@@ -56,9 +56,9 @@ function [y, u, theta_rls,P_rls] = MVa1_RLS_2(A, B, C, k, omega, e, N, theta_ini
         U_t = u(t - k - (0:nb));
         E_t = e(t - (0:nc));
 
-        if t == 2000
-            A = A.*[1,1,1,1];
-        end
+        % if t == 2000
+        %     A = A.*[1,1,1,1.001];
+        % end
         % Compute y using past values (and include u in the equation)
         y(t) = -A(2:end) * Y_t + B * U_t + C * E_t;
 
