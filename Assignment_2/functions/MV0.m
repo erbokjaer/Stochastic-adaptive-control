@@ -19,8 +19,8 @@ function [y,u] = MV0(A, B, omega, e, N, k, y_init, u_init)
         % MVC0
         u(t) = 1/(R(1)) * (omega(t)-S*y(t:-1:t-length(S)+1) - R(2:end)*u(t-1:-1:t-length(R)+1));
     end
-    y = y(numel(y_init)+1:end - max([numel(A),numel(B),numel(R)]));
-    u = u(numel(u_init)+1:end - max([numel(A),numel(B),numel(R)]));
+    y = y(numel(y_init):end - 1 - max([numel(A),numel(B),numel(R)]));
+    u = u(numel(u_init):end - 1 - max([numel(A),numel(B),numel(R)]));
 
     % Alternative implimentation throug GMV
     % Ay = [1];

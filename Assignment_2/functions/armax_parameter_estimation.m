@@ -14,28 +14,33 @@ function [y, theta_rls] = armax_parameter_estimation(A, B, C, u, e, N, y_init, t
      % Ensure input signals have length N
     u = [zeros(numel(y_init) + k, 1); u]; 
     e = [zeros(numel(y_init), 1); e];
+    E_t_est = zeros(numel(e),1);
 
     % Initialize Recursive Least Squares (RLS) parameters
     num_params = na + (nb + 1) + nc;
     theta_rls = zeros(num_params, N); % Store estimated parameters over time
     theta_hat = theta_init; % Initial parameter estimates
     P = P_init; % Initial covariance (high uncertainty)
-
+    
     % Iterative parameter estimation
     for t = simStart:N + numel(y_init)
         % Construct regressor vector
         Y_t = y(t - (1:na));
         U_t = u(t - k - (0:nb));
-        E_t = e(t - (1:nc));
-
-        Phi_t = [-Y_t', U_t', E_t']';  % Regressor vector
+        E_t = e(t - (0:nc));
 
         % Output computation from current parameters (simulation model)
-        y(t) = - A(2:end) * Y_t + B * U_t + C * [e(t);E_t];
+        y(t) = - A(2:end) * Y_t + B * U_t + C * E_t;
 
+        Phi_t = [-Y_t', U_t', E_t_est(t - (1:nc))']';  % Regressor vector
+        
         % Prediction error
         e_t = y(t) - Phi_t' * theta_hat;
+
+        E_t_est(t) = e_t;
         
+        
+
         
         % Covariance update based on forgetting method
         if strcmp(forgetting_method, 'exponential')
@@ -71,3 +76,4 @@ function [y, theta_rls] = armax_parameter_estimation(A, B, C, u, e, N, y_init, t
     y = y(numel(y_init) + 1:end);
     theta_rls = theta_rls(:, numel(y_init) + 1:end);
 end
+

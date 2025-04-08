@@ -1,4 +1,4 @@
-function [y,u] = MV0_RLS(A, B, omega, e, N, k, y_init, u_init, theta_init, P_init)
+function [y, u, theta_rls,P_rls] = MV0_RLS(A, B, omega, e, N, k, y_init, u_init, theta_init, P_init)
     C = 1;
     [G,S] = diophantine(A,C,k);
     R = conv(B,G);
@@ -6,6 +6,7 @@ function [y,u] = MV0_RLS(A, B, omega, e, N, k, y_init, u_init, theta_init, P_ini
     % Ensure input signals have length N
     omega = [y_init; omega]; 
     e = [zeros(numel(y_init),1) ; e];
+    E_t_est = zeros(numel(e),1);
 
     % Get polynomial orders
     na = numel(A) - 1;
@@ -24,12 +25,13 @@ function [y,u] = MV0_RLS(A, B, omega, e, N, k, y_init, u_init, theta_init, P_ini
     num = na + nb + 1;
     % Initialize Recursive Least Squares (RLS) Parameters
     theta_rls = zeros(num, N); % Store estimated parameters over time
+    P_rls = zeros(num, N);
     P = P_init; % Initial covariance (high uncertainty)
     lambda = 1; % Forgetting factor
 
     theta_hat = theta_init; % Initial parameter estimates
     % theta_hat = [A(2:end),B]';
-    P_plot = theta_hat;
+
 
     % Iterative MV1a control computation
     for t = simStart: N + max(numel(y_init),numel(u_init))
@@ -53,7 +55,7 @@ function [y,u] = MV0_RLS(A, B, omega, e, N, k, y_init, u_init, theta_init, P_ini
         
         % Covariance update
         P = (P - K_t * Phi_t' * P) / lambda;
-        P_plot(:, t) = diag(P);
+        P_rls(:, t) = diag(P);
         
         
         % Store estimates over time
@@ -76,8 +78,8 @@ function [y,u] = MV0_RLS(A, B, omega, e, N, k, y_init, u_init, theta_init, P_ini
 
         % Store output
     end
-    y = y(numel(y_init)+1:end);
-    u = u(numel(u_init)+1:end);
+    y = y(numel(y_init):end-1);
+    u = u(numel(u_init):end-1);
 
     disp("A_est_final = [" + num2str(A_est) + "]")
     disp("B_est_final = [" + num2str(B_est) + "]")
