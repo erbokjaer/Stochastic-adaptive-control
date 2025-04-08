@@ -1,4 +1,4 @@
-function [y, theta_rls] = armax_parameter_estimation(A, B, C, u, e, N, y_init, theta_init, P_init, k, forgetting_method, lambda)
+function [y, theta_rls] = armax_parameter_estimation(A, B, C, u, e, N, y_init, theta_init, P_init, k, N0)
    
 
     % Get polynomial orders
@@ -21,9 +21,11 @@ function [y, theta_rls] = armax_parameter_estimation(A, B, C, u, e, N, y_init, t
     theta_rls = zeros(num_params, N); % Store estimated parameters over time
     theta_hat = theta_init; % Initial parameter estimates
     P = P_init; % Initial covariance (high uncertainty)
+    r = e(1)^2 / 6; % Initial variance estimate
     
     % Iterative parameter estimation
     for t = simStart:N + numel(y_init)
+
         % Construct regressor vector
         Y_t = y(t - (1:na));
         U_t = u(t - k - (0:nb));
@@ -41,26 +43,19 @@ function [y, theta_rls] = armax_parameter_estimation(A, B, C, u, e, N, y_init, t
         
         
 
-        
-        % Covariance update based on forgetting method
-        if strcmp(forgetting_method, 'exponential')
-            % Kalman gain
-            K_t = P * Phi_t / (lambda + Phi_t' * P * Phi_t);
-            
-            % Parameter update
-            theta_hat = theta_hat + K_t * e_t;
-            
-            P = (P - K_t * Phi_t' * P) / lambda;
-        
-        else
-            % Kalman gain
-            K_t = P * Phi_t / (1 + Phi_t' * P * Phi_t);
-            
-            % Parameter update
-            theta_hat = theta_hat + K_t * e_t;
-            
-            P = P - K_t * Phi_t' * P; % Standard RLS update
-        end
+        % Update forgetting factor based on prediction error
+        s_t = 1 + Phi_t' * P * Phi_t;
+        r = r + (1 / t) * ((e_t^2 / s_t) - r);
+        lambda = 1 - (1 / N0) * (e_t^2 / (r * s_t));
+
+        % Kalman gain
+        K_t = P * Phi_t / (lambda + s_t);
+
+        % Parameter update
+        theta_hat = theta_hat + K_t * e_t;
+
+        % Covariance update
+        P = (P - K_t * Phi_t' * P) / lambda;
         
         % Store estimates over time
         theta_rls(:, t) = theta_hat;
