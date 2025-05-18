@@ -1,4 +1,4 @@
-function dxdt = F_ct(x0)
+function dxdt = F_ct(t,x0)
     kappa = 5*10^-5;
     lambda = 3;
     Lambda = 5*10^-5;
